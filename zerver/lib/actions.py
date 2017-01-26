@@ -3711,6 +3711,8 @@ def do_remove_realm_alias(alias):
     realm = alias.realm
     domain = alias.domain
     alias.delete()
+    if RealmAlias.objects.filter(realm=realm).count() == 0:
+        do_set_realm_restricted_to_domain(realm, False)
     event = dict(type="realm_domains", op="remove", domain=domain)
     send_event(event, active_user_ids(realm))
 
