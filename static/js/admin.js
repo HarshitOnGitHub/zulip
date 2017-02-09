@@ -463,6 +463,7 @@ function _setup_page() {
             },
             success: function () {
                 var button = row.find("button.deactivate");
+                row.find('button.open-user-form').hide();
                 button.addClass("btn-warning");
                 button.removeClass("btn-danger");
                 button.addClass("reactivate");
@@ -496,6 +497,7 @@ function _setup_page() {
             success: function () {
                 row.find(".user-admin-settings").show();
                 var button = row.find("button.reactivate");
+                row.find("button.open-user-form").show();
                 button.addClass("btn-danger");
                 button.removeClass("btn-warning");
                 button.addClass("deactivate");
