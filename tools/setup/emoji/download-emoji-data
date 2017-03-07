@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -e
+set -x
+
+output_path=static/third/emoji-data
+commit_file_path=$output_path/commit
+commit=b588e200268d6c3c1d20d5ecdfe4634a68a6f947 # Change this to upgrade
+
+mkdir -p "$output_path"
+
+if [ -e "$commit_file_path" ]
+then
+    current_commit=`cat $commit_file_path`
+else
+    current_commit=00
+fi
+
+if [ "$current_commit" == "$commit" ]; then
+    echo "Already at latest version of emoji.json"
+else
+    echo "$commit" > "$commit_file_path"
+    wget "https://raw.githubusercontent.com/iamcal/emoji-data/$commit/emoji.json" -O "$output_path/emoji.json"
+fi
