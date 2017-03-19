@@ -13,7 +13,7 @@ from itertools import permutations, chain
 import ujson
 
 from six.moves import range, zip
-from typing import Dict, List, Text
+from typing import Any, Dict, List, Text
 
 # the corresponding code point will be set to exactly these names as a
 # final pass, overriding any other rules.  This is useful for cases
@@ -223,3 +223,19 @@ def emoji_names_for_picker(emoji_map):
         codepoint_to_names[codepoint] = names
 
     return sorted(list(chain.from_iterable(codepoint_to_names.values())))
+
+def generate_emoji_catalog(emoji_data):
+    # type: (List[Dict[Text, Any]]) -> Dict[str, List[str]]
+    sort_order = {} # type: Dict[str, int]
+    emoji_catalog = {} # type: Dict[str, List[str]]
+    for emoji in emoji_data:
+        category = str(emoji["category"])
+        codepoint = str(emoji["unified"])
+        sort_order[codepoint] = emoji["sort_order"]
+        if category in emoji_catalog:
+            emoji_catalog[category].append(codepoint)
+        else:
+            emoji_catalog[category] = [codepoint, ]
+    for category in emoji_catalog:
+        emoji_catalog[category].sort(key=lambda codepoint: sort_order[codepoint])
+    return emoji_catalog
