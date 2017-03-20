@@ -54,6 +54,19 @@ if (typeof module !== 'undefined') {
 }
 """
 
+SPRITE_CSS_FILE_TEMPLATE = """\
+%(emoji_classes)s
+{
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    background-image: url('sheet_google.png');
+    background-repeat: no-repeat;
+}
+
+%(emoji_positions)s
+"""
+
 # change directory
 os.chdir(EMOJI_SCRIPT_DIR_PATH)
 
@@ -238,6 +251,30 @@ def dump_emojis(cache_path):
             os.path.join(cache_emoji_unicode, fn),
             os.path.join(cache_emoji, fn)
         )
+
+    run(['cp', '/srv/zulip/static/third/emoji-data/sheet_google.png', cache_path], shell=True)
+    emoji_classes = []
+    emoji_class = ".emoji_%(codepoint)s"
+    emoji_positions = ""
+    emoji_pos_info = """
+        .emoji_%(codepoint)s {
+            background-position: -%(pos_x)spx -%(pos_y)spx;
+        }
+    """
+    for emoji in emoji_data:
+        if emoji["has_img_google"]:
+            emoji_classes.append(emoji_class % {"codepoint": emoji["unified"], })
+            emoji_positions += emoji_pos_info % {'codepoint': emoji['unified'],
+                                                 'pos_x': emoji["sheet_x"] * 20,
+                                                 'pos_y': emoji["sheet_y"] * 20,
+                                                 }
+    SPRITE_CSS_PATH = os.path.join(cache_path, 'google_sprite.css')
+    sprite_css_file = open(SPRITE_CSS_PATH, 'w')
+    sprite_css_file.write(SPRITE_CSS_FILE_TEMPLATE % {
+        'emoji_classes': ",\n".join(emoji_classes),
+        'emoji_positions': emoji_positions,
+    })
+    sprite_css_file.close()
 
     # Add zulip emoji to `emoji_map` so that we can avoid
     # adding unnecessary exceptions to the rendering logic.

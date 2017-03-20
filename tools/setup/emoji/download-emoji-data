@@ -20,4 +20,5 @@ if [ "$current_commit" == "$commit" ]; then
 else
     echo "$commit" > "$commit_file_path"
     wget "https://raw.githubusercontent.com/iamcal/emoji-data/$commit/emoji.json" -O "$output_path/emoji.json"
+    wget "https://raw.githubusercontent.com/iamcal/emoji-data/$commit/sheet_google_20.png" -O "$output_path/sheet_google.png"
 fi
