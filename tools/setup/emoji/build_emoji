@@ -45,6 +45,8 @@ exports.codepoints = %(codepoints)s;
 
 exports.name_to_codepoint = %(name_to_codepoint)s;
 
+exports.codepoint_to_name = %(codepoint_to_name)s;
+
 exports.emoji_catalog = %(emoji_catalog)s;
 
 return exports;
@@ -282,6 +284,7 @@ def dump_emojis(cache_path):
         'names': names,
         'codepoints': sorted([str(code_point) for code_point in set(emoji_map.values())]),
         'name_to_codepoint': {str(key): str(emoji_map[key]) for key in emoji_map},
+        'codepoint_to_name': {str(emoji_map[name]): str(name) for name in names},
         'emoji_catalog': emoji_catalog
     })
     emoji_codes_file.close()
