@@ -1,6 +1,6 @@
 var reactions = (function () {
 var exports = {};
-
+var filter_timeout;
 function send_reaction_ajax(message_id, emoji_name, operation) {
     if (!emoji.emojis_by_name[emoji_name] && !emoji.realm_emojis[emoji_name]) {
         // Emoji doesn't exist
@@ -101,10 +101,47 @@ exports.render_reaction_show_list = function () {
     }).toArray();
 };
 
+function promote_popular(a, b) {
+    function rank(name) {
+        switch (name) {
+            case '+1': return 1;
+            case 'tada': return 2;
+            case 'simple_smile': return 3;
+            case 'laughing': return 4;
+            case '100': return 5;
+            default: return 999;
+        }
+    }
+    var a_name = $(a).attr('title');
+    var b_name = $(b).attr('title');
+    var diff = rank(a_name) - rank(b_name);
+
+    if (diff !== 0) {
+        return diff;
+    }
+
+    return util.strcmp(a_name, b_name);
+}
+
+function sort_emoji_order(reaction_list, query) {
+        reaction_list.sort(promote_popular);
+    if (query !== '') {
+        result = util.prefix_sort(query, reaction_list.toArray(),
+            function (x) { return $(x).attr('title'); });
+        reaction_list = result.matches.concat(result.rest);
+    }
+
+    for (var i = 1; i <= reaction_list.length; ++i) {
+        var order_no = i.toString();
+        $(reaction_list[i-1]).css('order', order_no);
+    }
+}
+
 function filter_emojis() {
     var elt = $(".emoji-popover-filter").expectOne();
     var search_term = elt.val().trim().toLowerCase();
     var reaction_list = $(".emoji-popover-emoji");
+    sort_emoji_order(reaction_list, search_term);
     if (search_term !== '') {
         reaction_list.each(function () {
             if (this.title.indexOf(search_term) === -1) {
@@ -164,7 +201,12 @@ $(document).on('click', '.emoji-popover-emoji.reaction', function () {
     exports.toggle_reaction(message_id, emoji_name);
 });
 
-$(document).on('input', '.emoji-popover-filter', filter_emojis);
+$(document).on('input', '.emoji-popover-filter', function () {
+    if(filter_timeout !== undefined){
+        clearTimeout(filter_timeout);
+    }
+    filter_timeout = setTimeout(filter_emojis, 350);
+});
 $(document).on('keydown', '.emoji-popover-filter', maybe_select_emoji);
 
 exports.reaction_navigate = function (e, event_name) {
@@ -373,6 +415,7 @@ $(function () {
 });
 
 return exports;
+
 }());
 
 if (typeof module !== 'undefined') {
