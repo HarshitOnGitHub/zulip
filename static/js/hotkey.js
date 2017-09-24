@@ -7,6 +7,17 @@ function do_narrow_action(action) {
     return true;
 }
 
+function react_with_thumbs_up (msg_id) {
+    var thumbs_up_codepoint = '1f44d';
+    // If the user has reacted to the message before with thumbs up then
+    // use the alias used by the user otherwise use the canonical name
+    // given by the `codepoint_to_name`.
+    var canonical_name = emoji_codes.codepoint_to_name[thumbs_up_codepoint];
+    var alias_used = emoji_picker.get_alias_to_be_used(msg_id, canonical_name);
+    reactions.toggle_emoji_reaction(msg_id, alias_used);
+
+}
+
 var actions_dropdown_hotkeys = [
     'down_arrow',
     'up_arrow',
@@ -671,13 +682,7 @@ exports.process_hotkey = function (e, hotkey) {
             reactions.open_reactions_popover();
             return true;
         case 'thumbs_up_emoji': // '+': reacts with thumbs up emoji on selected message
-            var thumbs_up_codepoint = '1f44d';
-            // If the user has reacted to the message before with thumbs up then
-            // use the alias used by the user otherwise use the canonical name
-            // given by the `codepoint_to_name`.
-            var canonical_name = emoji_codes.codepoint_to_name[thumbs_up_codepoint];
-            var alias_used = emoji_picker.get_alias_to_be_used(msg.id, canonical_name);
-            reactions.toggle_emoji_reaction(msg.id, alias_used);
+            react_with_thumbs_up(msg.id);
             return true;
         case 'toggle_mute':
             muting_ui.toggle_mute(msg);
