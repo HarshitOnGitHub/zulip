@@ -691,7 +691,7 @@ exports.process_hotkey = function (e, hotkey) {
             condense.toggle_collapse(msg);
             return true;
     }
-
+    console.log("Returing false");
     return false;
 };
 

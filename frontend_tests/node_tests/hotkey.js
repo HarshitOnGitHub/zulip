@@ -61,7 +61,9 @@ function stubbing(func_name_to_stub, test_function) {
         global.with_stub(function (stub) {
             override(func_name_to_stub, stub.f);
             test_function(stub);
+            console.log(func_name_to_stub);
         });
+            console.log(func_name_to_stub);
     });
 }
 
@@ -160,11 +162,21 @@ function stubbing(func_name_to_stub, test_function) {
     hotkey.is_editing_stream_name = return_false;
     overlays.settings_open = return_false;
 
+    set_global('emoji_codes', {
+        codepoint_to_name: {
+        },
+    });
     set_global('popovers', {
         actions_popped: return_false,
     });
     set_global('emoji_picker', {
+        get_alias_to_be_used: function () {
+        },
         reactions_popped: return_false,
+    });
+    set_global('reactions', {
+        toggle_emoji_reaction: function () {
+        },
     });
     set_global('hotspots', {
         is_open: return_false,
